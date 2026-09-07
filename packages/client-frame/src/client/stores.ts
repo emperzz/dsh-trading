@@ -7,7 +7,8 @@
  * PropsStore share from the return type, and the service face receives the
  * bound actions through the registration's inject hook.
  */
-import { defineStore } from '@deepseek-ai/dsh-client-runtime/client'
+import { defineStore } from '@deepseek-ai/dsh-client-store'
+import type { StoreHandle } from '@deepseek-ai/dsh-client-ui-slots'
 import {
   CHART_RATIO_DEFAULT,
   clampRatio,
@@ -36,15 +37,35 @@ type LayoutState = {
   narrowExpanded: boolean
 }
 
+/** Layout actions: draft-stripped by the engine, retained here for BoundActions. */
+type LayoutActions = {
+  setSidebar: (d: LayoutState, px: number) => void
+  setChart: (d: LayoutState, ratio: number) => void
+  openChart: (d: LayoutState) => void
+  closeChart: (d: LayoutState) => void
+  toggleChart: (d: LayoutState) => void
+  setDetails: (d: LayoutState, px: number) => void
+  toggleSidebar: (d: LayoutState) => void
+  setNarrow: (d: LayoutState, narrow: boolean) => void
+  openDetails: (d: LayoutState) => void
+  closeDetails: (d: LayoutState) => void
+}
+
 /**
  * Create the layout panel store handle. The preference IS the width, so
  * closing a panel forgets its drag width — reopening restores the contract
  * default. Actions are the complete write set: drag writes clamp into the
  * panel's contract range and never cross the open/closed line; open/close
  * transitions write 0 / the default explicitly.
+ *
+ * The return type is widened to the slot's `StoreHandle` shape: the engine's
+ * concrete `EngineStoreHandle` extends it structurally, but the two come from
+ * different packages whose .d.ts files declare distinct nominal `BakedActions`
+ * identities. Forcing the slot's view of `StoreHandle` keeps `BoundActions`
+ * inference well-typed without leaking the engine's extra surface.
  * @returns the store handle (spec + type + identity + factory in one).
  */
-export function createLayoutStore() {
+export function createLayoutStore(): StoreHandle<LayoutState, LayoutActions> {
   return defineStore({
     init: (): LayoutState => ({
       // Collapsed to the rail by default. Session history does not earn a

@@ -12,7 +12,7 @@
  * names on purpose: ui-sidebar and ui-conversation register by name and mount
  * unchanged.
  */
-import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
+import type { Context as ClientContext } from '@deepseek-ai/cordis'
 import type {} from '@deepseek-ai/dsh-client-ui-theme/client'
 // Type-only: brings ui-conversation's header-slot declarations into scope so
 // the switcher can claim a seat there.

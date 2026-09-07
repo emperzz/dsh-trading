@@ -13,7 +13,7 @@
  * cordis imports, zero self-made hooks.
  */
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
-import type { ReactNode } from 'react'
+import type { ReactElement, ReactNode } from 'react'
 import type { PropsRenderSlots, PropsRuntime, PropsStore } from '@deepseek-ai/dsh-client-ui-slots'
 import type {} from './slots.js'
 import { computeColumns, SIDEBAR_AUTO_COLLAPSE, SIDEBAR_DEFAULT } from './columns.js'
@@ -114,7 +114,7 @@ function DragHandle(props: {
 }
 
 /** The three-column frame (see module doc). */
-export function TradingFrame({ useStore, useSessions, actions, renderSlot }: TradingFrameProps) {
+export function TradingFrame({ useStore, useSessions, actions, renderSlot }: TradingFrameProps): ReactElement {
   const panels = useStore((s) => s)
   const detailsSession = useSessions((s) => {
     const current = s.current

@@ -4,6 +4,10 @@ lib/
 .DS_Store
 .claude/
 
+# Local Playwright MCP scratch — screenshots, traces, accessibility snapshots
+# left behind by interactive browser sessions. Tool output, not repo content.
+.playwright-mcp/
+
 # Sample candles are generated, not shipped — run examples/generate-sample-data.mjs.
 # `/data` is the local convenience symlink dsh reads when run from the repo root.
 /data
