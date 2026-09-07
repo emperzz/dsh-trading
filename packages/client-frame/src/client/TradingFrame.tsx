@@ -114,7 +114,15 @@ function DragHandle(props: {
 }
 
 /** The three-column frame (see module doc). */
-export function TradingFrame({ useStore, useSessions, actions, renderSlot }: TradingFrameProps): ReactElement {
+export function TradingFrame({ useStore, useSessions, actions, renderSlot, SessionProvider }: TradingFrameProps): ReactElement {
+  // The provider takes plain children at the runtime this plugin loads under:
+  // renderSessionArea (dsh-client-ui-session 0.1.2-rc.1) spreads them into a
+  // keyed Fragment and the no-binding branch drops them without rendering —
+  // it never calls them. The rc.6 type signature still declares the older
+  // render-prop form, a function child the runtime would reject; the cast
+  // keeps the call site honest to the contract that actually executes, the
+  // same one stock AppFrame compiles against.
+  const SessionArea = SessionProvider as unknown as (props: { children: ReactNode; empty?: () => ReactNode }) => ReactNode
   const panels = useStore((s) => s)
   const detailsSession = useSessions((s) => {
     const current = s.current
@@ -225,7 +233,13 @@ export function TradingFrame({ useStore, useSessions, actions, renderSlot }: Tra
       </ChartColumn>
       <>
         <CenterColumn>{renderSlot('conversation', {})}</CenterColumn>
-        <DetailsColumn>{renderSlot('details', {})}</DetailsColumn>
+        {/* The provider is the only legal path to a strict session seat: slot
+            core throws when 'details' renders without a scope binding, and on
+            boot there is none — the no-binding branch drops the subtree, so
+            the outlet renders only inside a bound session. */}
+        <DetailsColumn>
+          <SessionArea>{renderSlot('details', {})}</SessionArea>
+        </DetailsColumn>
       </>
       <div className={styles.overlayLayer} data-shell-overlay>
         {renderSlot('shell.overlay', {})}
